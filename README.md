@@ -1,10 +1,9 @@
-nonnegative
-===========
+# nonnegative
+
 
 Playground for showing ill effects of nonnegative priors.
 
-Contributors
-------------
+### Contributors: ###
 
 Ross Fadely
 David Hogg
