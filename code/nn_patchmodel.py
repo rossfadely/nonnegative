@@ -28,6 +28,7 @@ class PsfModels(object):
             (patchshape[1]-1)/2)
 
         self.make_patches()
+        self.avg_patches()
 
     def gaussianpsf(self,flux,xgrid,ygrid,x0,y0,psfhwhm):
         """
@@ -52,7 +53,7 @@ class PsfModels(object):
     def draw_score(self):
         """
         Draw score from a power law... how
-        did I define that again?
+        did I define that again? -2?
         """
         scoremin = self.scorerange[0]
         scoremax = self.scorerange[1]
@@ -82,4 +83,10 @@ class PsfModels(object):
                                          self.scores[i])
             self.patches[i] = self.make_patch(self.bkg_sigmas[i])
 
-
+    def avg_patches(self):
+        """
+        Create an average psf which sums to one
+        """
+        self.avgpsf = np.zeros(self.patchshape)
+        for i in range(self.npatches):
+            self.avgpsf += self.patches[i] / self.patches[i].sum() / self.npatches

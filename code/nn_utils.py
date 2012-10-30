@@ -1,14 +1,25 @@
+import numpy as np
 import scipy.ndimage as ndimage
 
 from scipy.optimize import fmin_l_bfgs_b
 from scipy.optimize import fmin
 
+def sq_fluxradius(p,patch,fraction):
+    """
+    Return the square error between the flux ratio in
+    for a given radius and the desired 'fraction' 
+    """
+    flux  = np.sum(patch)
+    nx,ny = np.shape(patch)
+    x,y   = np.meshgrid(range(nx),range(ny))
+    ind   = np.sqrt((x-(nx-1)/2.)**2+(y-(ny-1)/2.)**2) < p
+    finr  = np.sum(patch[ind])
+    return (finr/flux-fraction)**2.
 
 def sq_nearest(values):
     return np.sum((values-values[len(values)/2])**2.)
 
-def lnlike(modelpatch,data,sig_smooth,sig_L2,sig_one,
-                 w_L2):
+def lnlike(modelpatch,data,sig_smooth,sig_L2,sig_one,w_L2):
     """
     Return the negative log-likelihood given a pixel patch across a
     given set of data patches, weighted by regularization priors.
@@ -43,3 +54,4 @@ def lnlike(modelpatch,data,sig_smooth,sig_L2,sig_one,
         lnlike += (np.sum(modelpatch)-1)**2. * sig_one
 
     return lnlike
+
