@@ -19,7 +19,8 @@ class PsfModels(object):
         self.flux = flux
         self.bkg = bkg
 
-        assert (np.mod(patchshape,2) & np.mod(patchshape,2)),
+        assert ((np.mod(patchshape[0],2)) &
+                (np.mod(patchshape[1],2))), \
             'Patch size must be odd by odd'
         
         # PSF stars in center of patch
@@ -40,12 +41,12 @@ class PsfModels(object):
         """
         Make a patch of pixels with constant noise and gaussian psf
         """
-        patch = np.random.normal(size=model.psfshape) * bkg_sigma
-        patch += model.bkg
-        nx,ny = model.psfshape
+        patch = np.random.normal(size=self.patchshape) * bkg_sigma
+        patch += self.bkg
+        nx,ny = self.patchshape
         x,y   = np.meshgrid(range(nx),range(ny))
-        patch += gaussianpsf(model.flux,x,y,model.psfpos[0],
-                             model.psfpos[1],model.psfhwhm)
+        patch += self.gaussianpsf(self.flux,x,y,self.psfpos[0],
+                                  self.psfpos[1],self.psfhwhm)
         return patch
 
     def draw_score(self):
@@ -70,15 +71,15 @@ class PsfModels(object):
         """
         Make the patches
         """
-        self.patches = np.zeros((npatches,patchshape[0],
-                                 patchshape[1]))
-        self.scores = np.zeros(npatches)
-        self.bkg_sigmas = np.zeros(npatches)
+        self.patches = np.zeros((self.npatches,self.patchshape[0],
+                                 self.patchshape[1]))
+        self.scores = np.zeros(self.npatches)
+        self.bkg_sigmas = np.zeros(self.npatches)
 
         for i in range(self.npatches):
             self.scores[i] = self.draw_score()
             self.bkg_sigmas[i] = np.sqrt(self.flux**2. / (2*self.psfhwhm)**2. / \
-                                         self.score[i])
+                                         self.scores[i])
             self.patches[i] = self.make_patch(self.bkg_sigmas[i])
 
 
