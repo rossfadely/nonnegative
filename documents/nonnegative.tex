@@ -1,0 +1,80 @@
+\documentclass[12pt,preprint]{aastex}
+
+% has to be before amssymb it seems
+\usepackage{color,hyperref}
+\definecolor{linkcolor}{rgb}{0,0,0.5}
+\hypersetup{colorlinks=true,linkcolor=linkcolor,citecolor=linkcolor,
+            filecolor=linkcolor,urlcolor=linkcolor}
+\newcommand{\numberparagraphs}{}
+\newcommand{\nonumberparagraphs}{}
+
+\usepackage{url}
+\begin{document}
+
+\title{PSF Regularizations: Consequences and Solutions}
+
+\newcommand{\nyu}{2}
+\newcommand{\mpia}{3}
+\author{Ross~Fadely\altaffilmark{\nyu},   David~W.~Hogg\altaffilmark{\nyu,\mpia}, 
+Daniel~Foreman-Mackey\altaffilmark{\nyu}, \etal}
+\altaffiltext{\nyu}{Center for Cosmology and Particle Physics,
+                        Department of Physics, New York University,
+                        4 Washington Place, New York, NY, 10003, USA}
+\altaffiltext{\mpia}{Max-Planck-Institut f\"ur Astronomie,
+                        K\"onigstuhl 17, D-69117 Heidelberg, Germany}
+
+\begin{abstract}
+\end{abstract}
+
+\section{Introduction}
+
+\begin{itemize}
+
+\item Regularization of PSF models has an important impact on the modeling and 
+measurements of astronomical images.
+\item SDSS and others allow PSF models to have negative values
+\item Negative-valued pixels in PSF models are counter-intuitive from a physical 
+standpoint, and are tricky to incorporate into generative models
+\item Forcing non-negativity causes larger and erroneous PSF models
+\item New priors/regularizations are needed to fix these issues.
+
+\end{itemize}
+
+\section{Likelihood and PSF Model}
+\label{sec:psfmodel}
+
+We want a pixelated model for the PSF, which will be fit to a set of stars in astronomical 
+images.  The pixelated model is a much more general form of the PSF than parametric 
+representations, and fit in naturally when modeling the underlying intensity field.  Given 
+a set of $N_s$ PSF stars, the likelihood of the PSF model is 
+
+\begin{eqnarray}\displaystyle
+\mathcal{L} &=& \prod P(D_i | f_i, M)\\
+&{\rm where}&\nonumber\\
+P(D_i | F_i, M) &=& \sum_j^{N_p} \frac{1}{\sqrt(2\pi\sigma_{ij}^2)}e^{-\frac{1}{2}(p_{ij}-f_i m_j)^2/\sigma_{ij}^2} \,.
+\end{eqnarray}
+
+\noindent The data $D_i$ for the $i$th star consists of $N_p \times N_p$ pixels values, 
+which are modeled as (for background subtracted patches) a single flux $f_i$ times PSF 
+model pixels $m_j$ over the same pixel grid.  Each data pixel has associated variance 
+$\sigma_{ij}^2$.  A best-fit un-regularized model for the PSF is one which finds the values 
+of $f_i,m_j$ which maximize the likelihood.  Under the presence of noisy data, values of 
+$m_j$ will have negative values.  Note the procedure of maximizing the likelihood is 
+simple linear least squares fitting \citep{hoggdatarecipes}.
+
+\section{Regularizations}
+\label{sec:regularizations}
+
+While often suitable in practice, the likelihood optimization described in Section \ref{sec:psfmodel} 
+is unjustified in the sense that it does not capture basic prior knowledge about the PSF.  Two 
+basic beliefs held about the PSF is that it ought to be \emph{smooth}, decreasing from a peaked 
+central value monotonically in a continuous fashion, and it ought to be \emph{near-zero} valued 
+at large radii.   In addition, its reasonable to expect a good PSF model to sum to one, such that 
+which convolved with a delta function with amplitude set to a star's flux, one has a realistic model for 
+the star in an image.
+
+
+
+\end{document}
+
+
